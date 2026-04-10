@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Carbon Footprint Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Abstract ambient background orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+        .orb-1 { width: 400px; height: 400px; background: #10b981; top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: #3b82f6; bottom: -50px; right: 10%; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #34d399, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+        }
+        
+        /* Stagger animations for form items */
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+        .form-group:nth-child(3) { animation-delay: 0.4s; }
+        .form-group:nth-child(4) { animation-delay: 0.5s; }
+        .form-group:nth-child(5) { animation-delay: 0.6s; }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            appearance: none;
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        select:focus, select:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        option {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, var(--primary), #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+            font-family: 'Outfit', sans-serif;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.8s;
+            opacity: 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Panel */
+        #results-panel {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            animation: fadeUp 0.5s forwards;
+        }
+
+        .score-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .ai-loading {
+            display: none;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-response {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1.5rem;
+            border-radius: 16px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <header>
+            <h1>🌍 Carbon AI</h1>
+            <p class="subtitle">Estimate your footprint & get tailored AI advice.</p>
+        </header>
+
+        <form id="carbon-form">
+            <div class="form-group">
+                <label for="transport">🚗 Transport</label>
+                <select id="transport">
+                    <option value="Car (alone)">Car (alone)</option>
+                    <option value="Carpool">Carpool</option>
+                    <option value="Public Transport">Public Transport</option>
+                    <option value="Bike/Walk">Bike/Walk</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="diet">🍽️ Diet</label>
+                <select id="diet">
+                    <option value="Daily">Meat Daily</option>
+                    <option value="Few times/week">Meat Few times/week</option>
+                    <option value="Rarely">Meat Rarely</option>
+                    <option value="Vegetarian/Vegan">Vegetarian/Vegan</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="flights">✈️ Flights per year</label>
+                <select id="flights">
+                    <option value="0">0</option>
+                    <option value="1-2">1-2</option>
+                    <option value="3-5">3-5</option>
+                    <option value="5+">5+</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="shopping">🛍️ Shopping Habits</label>
+                <select id="shopping">
+                    <option value="Frequent">Frequent</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Rare">Rare</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="energy">💡 Home Energy Usage</label>
+                <select id="energy">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn" id="calculate-btn">Calculate & Get AI Advice</button>
+        </form>
+
+        <div class="ai-loading" id="loading">
+            <div class="spinner"></div> Analyzing lifestyle data...
+        </div>
+
+        <div id="results-panel">
+            <div class="score-card">
+                <h3>Your Carbon Score</h3>
+                <div class="score-value" id="score-display">0</div>
+                <p id="impact-level">Impact Level: Checking...</p>
+            </div>
+            
+            <h3>🤖 AI Suggestions</h3>
+            <div class="ai-response" id="ai-text">
+                Your AI personalized feedback will appear here shortly.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate the Python logic on the frontend
+        function calculateScore() {
+            let score = 0;
+            const transport = document.getElementById('transport').value;
+            const diet = document.getElementById('diet').value;
+            const flights = document.getElementById('flights').value;
+            const shopping = document.getElementById('shopping').value;
+            const energy = document.getElementById('energy').value;
+
+            if (transport === "Car (alone)") score += 10;
+            else if (transport === "Carpool") score += 7;
+            else if (transport === "Public Transport") score += 5;
+            else score += 2;
+
+            if (diet.includes("Daily")) score += 10;
+            else if (diet.includes("Few times/week")) score += 7;
+            else if (diet.includes("Rarely")) score += 4;
+            else score += 2;
+
+            if (flights === "5+") score += 15;
+            else if (flights === "3-5") score += 10;
+            else if (flights === "1-2") score += 5;
+
+            if (shopping === "Frequent") score += 10;
+            else if (shopping === "Moderate") score += 5;
+            else score += 2;
+
+            if (energy === "High") score += 10;
+            else if (energy === "Medium") score += 5;
+            else score += 2;
+
+            return score;
+        }
+
+        function getLevel(score) {
+            if (score <= 20) return "Low";
+            if (score <= 40) return "Medium";
+            return "High";
+        }
+
+        document.getElementById('calculate-btn').addEventListener('click', () => {
+            const btn = document.getElementById('calculate-btn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results-panel');
+            
+            // Calculate
+            const score = calculateScore();
+            const level = getLevel(score);
+            
+            // Update UI
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('impact-level').innerText = `Impact Level: ${level}`;
+            
+            // UI State change
+            btn.style.display = 'none';
+            loading.style.display = 'block';
+            results.style.display = 'none';
+
+            // Simulate AI API call (Later connect to backend API)
+            setTimeout(() => {
+                loading.style.display = 'none';
+                results.style.display = 'block';
+                btn.style.display = 'block';
+                btn.innerText = 'Recalculate';
+
+                document.getElementById('ai-text').innerText = `Based on your score of ${score} (${level} impact): \n\n1. Consider replacing short car trips with biking or walking.\n2. Attempting a 'Meatless Monday' could reduce your diet emissions.\n3. Be mindful of flight frequency when planning holidays.\n4. Opt for energy efficient appliances.\n\n*Note: This is simulated data until the Groq backend is connected!*`;
+            }, 1800);
+        });
+    </script>
+</body>
+</html>
