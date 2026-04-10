@@ -5,7 +5,7 @@ from groq import Groq
 # 🔑 SET API KEY
 # -----------------------------
 import os
-client = Groq(api_key=st.secrets["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"])
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 # -----------------------------
 # 🌍 UI
